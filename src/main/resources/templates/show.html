@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Show</title>
+</head>
+<body>
+<p th:text="${formula.getId()}">VALUE</p>
+<p th:text="${formula.getFormulaString()}">VALUE</p>
+<p th:text="${'result = ' + formula.getResult()}" >VALUE</p>
+<p th:text="${'x1 = ' + formula.getX1()}" >VALUE</p>
+<p th:text="${'x2 = ' + formula.getX2()}" >VALUE</p>
+<p th:text="${'x3 = ' + formula.getX3()}" >VALUE</p>
+<p th:text="${'x4 = ' + formula.getX4()}" >VALUE</p>
+<p th:text="${'x5 = ' + formula.getX5()}" >VALUE</p>
+
+
+
+
+<a th:href="@{/formulas/{id}/edit(id=${formula.getId()})}">Edit</a>
+
+<form th:method="DELETE" th:action="@{/formulas/{id}(id=${formula.getId()})}">
+  <input type="submit" value="Delete"/>
+</form>
+</body>
+</html>

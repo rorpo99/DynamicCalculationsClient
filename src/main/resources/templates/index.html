@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{/formulas}" th:object="${formula}">
+    <p>Example: x1 and not (x2 or x4 and true) and x3 </p>
+    <label for="formula">Input equation: </label>
+    <input type="text" th:field="*{formulaString}" id="formula"/>
+    <div style="color:red" th:if="${#fields.hasErrors('formulaString')}" th:errors="*{formulaString}">Name Error</div>
+    <br/>
+    <label for="x1">x1: </label>
+    <input type="text" th:field="*{x1}" id="x1"/>
+    <div style="color:red" th:if="${#fields.hasErrors('x1')}" th:errors="*{x1}">Age Error</div>
+    <br/>
+    <label for="x2">x2: </label>
+    <input type="text" th:field="*{x2}" id="x2"/>
+    <div style="color:red" th:if="${#fields.hasErrors('x2')}" th:errors="*{x2}">Email Error</div>
+    <br/>
+    <label for="x3">x3: </label>
+    <input type="text" th:field="*{x3}" id="x3"/>
+    <div style="color:red" th:if="${#fields.hasErrors('x3')}" th:errors="*{x3}">Email Error</div>
+    <br/>
+    <label for="x4">x4: </label>
+    <input type="text" th:field="*{x4}" id="x4"/>
+    <div style="color:red" th:if="${#fields.hasErrors('x4')}" th:errors="*{x4}">Email Error</div>
+    <br/>
+    <label for="x5">x5: </label>
+    <input type="text" th:field="*{x5}" id="x5"/>
+    <div style="color:red" th:if="${#fields.hasErrors('x5')}" th:errors="*{x5}">Email Error</div>
+    <br/>
+    <input type="submit" value="Create!"/>
+</form>
+
+<br/>
+<hr/>
+
+<p>History</p>
+
+<div th:each="formula : ${formulas}">
+    <a th:href="@{/formulas/{id}(id=${formula.getId()})}"
+       th:text="${formula.getFormulaString()}">user</a>
+</div>
+
+</body>
+</html>
