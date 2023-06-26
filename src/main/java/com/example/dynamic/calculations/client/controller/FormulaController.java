@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,8 +25,6 @@ public class FormulaController {
     public String index(Model model, @ModelAttribute("formula") Formula formula) {
         String fooResourceUrl
                 = "http://localhost:8080/api/v1/formulas";
-//        ResponseEntity<Formula> response
-//                = restTemplate.getForEntity(fooResourceUrl, Formula.class);
         List<Formula> response
                 = restTemplate.exchange(
                         fooResourceUrl,
@@ -59,11 +56,6 @@ public class FormulaController {
 
     }
 
-//    @GetMapping("/new")
-//    public String newFormula(@ModelAttribute("formula") Formula formula) {
-//        return "new";
-//    }
-
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model) {
 
@@ -82,7 +74,6 @@ public class FormulaController {
         if (bindingResult.hasErrors())
             return "edit";
 
-        //personDAO.update(id, person);
         String fooResourceUrl
                 = "http://localhost:8080/api/v1/formulas";
 
