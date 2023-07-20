@@ -1,13 +1,13 @@
 package com.example.dynamic.calculations.client.controller;
 
 import com.example.dynamic.calculations.client.model.Formula;
-import jakarta.validation.Valid;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,14 +36,30 @@ public class FormulaController {
     }
 
     @PostMapping()
-    public String newFormula(@ModelAttribute("formula") @Valid Formula formula,
-                             BindingResult bindingResult) {
+    public String newFormula(@ModelAttribute("formula") Formula formula, BindingResult bindingResult) {
+
+        HttpEntity<Formula> request = new HttpEntity<>(formula);
+
+        try {
+            restTemplate.postForObject(resourceUrl, request, Formula.class);
+        }
+        catch (Exception e) {
+            String[] errorMessage = e.getMessage().split(":", 3);
+            String resultError;
+
+            if (errorMessage[0].trim().equals("400")) {
+                resultError = "Equation " + errorMessage[2].split("\"")[1];
+            }
+            else {
+                resultError = errorMessage[2].split("\"")[1];
+            }
+            ObjectError error = new ObjectError("globalError", resultError);
+            bindingResult.addError(error);
+        }
+
         if (bindingResult.hasErrors()) {
             return "index";
         }
-
-        HttpEntity<Formula> request = new HttpEntity<>(formula);
-        restTemplate.postForObject(resourceUrl, request, Formula.class);
 
         return "redirect:/formulas";
 
@@ -51,27 +67,44 @@ public class FormulaController {
 
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model) {
-        Formula response
-                = restTemplate.getForObject(resourceUrl + "/" + id, Formula.class);
+        Formula response = restTemplate.getForObject(resourceUrl + "/" + id, Formula.class);
         model.addAttribute("formula", response);
         return "show";
     }
 
     @PutMapping("/{id}")
-    public String update(@ModelAttribute("formula") Formula updatedFormula, BindingResult bindingResult,
-                         @PathVariable("id") int id) {
-        if (bindingResult.hasErrors())
-            return "edit";
+    public String update(@ModelAttribute("formula") Formula updatedFormula,
+                         BindingResult bindingResult, @PathVariable("id") int id) {
 
         HttpEntity<Formula> requestUpdate = new HttpEntity<>(updatedFormula);
-        restTemplate.exchange(resourceUrl + "/" + id, HttpMethod.PUT, requestUpdate, Void.class);
+
+        try {
+            restTemplate.exchange(resourceUrl + "/" + id, HttpMethod.PUT, requestUpdate, Void.class);
+        }
+        catch (Exception e) {
+            String[] errorMessage = e.getMessage().split(":", 3);
+            String resultError;
+
+            if (errorMessage[0].trim().equals("400")) {
+                resultError = "Equation " + errorMessage[2].split("\"")[1];
+            }
+            else {
+                resultError = errorMessage[2].split("\"")[1];
+            }
+            ObjectError error = new ObjectError("globalError", resultError);
+            bindingResult.addError(error);
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "edit";
+        }
+
         return "redirect:/formulas";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
-        Formula response
-                = restTemplate.getForObject(resourceUrl + "/" + id, Formula.class);
+        Formula response = restTemplate.getForObject(resourceUrl + "/" + id, Formula.class);
         model.addAttribute("formula", response);
         return "edit";
     }
@@ -82,6 +115,4 @@ public class FormulaController {
         restTemplate.delete(resourceUrl + "/" + id);
         return "redirect:/formulas";
     }
-
-
 }
