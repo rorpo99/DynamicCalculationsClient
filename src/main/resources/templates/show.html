@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Show</title>
+  <title>Formula info</title>
 </head>
 <body>
 <p th:text="${formula.getId()}">VALUE</p>
@@ -13,9 +13,6 @@
 <p th:text="${'x3 = ' + formula.getX3()}" >VALUE</p>
 <p th:text="${'x4 = ' + formula.getX4()}" >VALUE</p>
 <p th:text="${'x5 = ' + formula.getX5()}" >VALUE</p>
-
-
-
 
 <a th:href="@{/formulas/{id}/edit(id=${formula.getId()})}">Edit</a>
 

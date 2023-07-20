@@ -11,9 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/formulas")
@@ -21,19 +19,17 @@ public class FormulaController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private final String resourceUrl = "http://localhost:8080/api/v1/formulas";
+
     @GetMapping()
     public String index(Model model, @ModelAttribute("formula") Formula formula) {
-        String fooResourceUrl
-                = "http://localhost:8080/api/v1/formulas";
         List<Formula> response
                 = restTemplate.exchange(
-                        fooResourceUrl,
+                        resourceUrl,
                         HttpMethod.GET,
                         null,
                         new ParameterizedTypeReference<List<Formula>>() {})
                 .getBody();
-
-        Objects.requireNonNull(response).sort(Comparator.comparingInt(Formula::getId));
 
         model.addAttribute("formulas", response);
         return "index";
@@ -43,14 +39,11 @@ public class FormulaController {
     public String newFormula(@ModelAttribute("formula") @Valid Formula formula,
                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "new";
+            return "index";
         }
 
-        String fooResourceUrl
-                = "http://localhost:8080/api/v1/formulas";
-
         HttpEntity<Formula> request = new HttpEntity<>(formula);
-        Formula newformula = restTemplate.postForObject(fooResourceUrl, request, Formula.class);
+        restTemplate.postForObject(resourceUrl, request, Formula.class);
 
         return "redirect:/formulas";
 
@@ -58,12 +51,8 @@ public class FormulaController {
 
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model) {
-
-        String fooResourceUrl
-                = "http://localhost:8080/api/v1/formulas";
-
         Formula response
-                = restTemplate.getForObject(fooResourceUrl + "/" + id, Formula.class);
+                = restTemplate.getForObject(resourceUrl + "/" + id, Formula.class);
         model.addAttribute("formula", response);
         return "show";
     }
@@ -74,20 +63,15 @@ public class FormulaController {
         if (bindingResult.hasErrors())
             return "edit";
 
-        String fooResourceUrl
-                = "http://localhost:8080/api/v1/formulas";
-
         HttpEntity<Formula> requestUpdate = new HttpEntity<>(updatedFormula);
-        restTemplate.exchange(fooResourceUrl + "/" + id, HttpMethod.PUT, requestUpdate, Void.class);
+        restTemplate.exchange(resourceUrl + "/" + id, HttpMethod.PUT, requestUpdate, Void.class);
         return "redirect:/formulas";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
-        String fooResourceUrl
-                = "http://localhost:8080/api/v1/formulas";
         Formula response
-                = restTemplate.getForObject(fooResourceUrl + "/" + id, Formula.class);
+                = restTemplate.getForObject(resourceUrl + "/" + id, Formula.class);
         model.addAttribute("formula", response);
         return "edit";
     }
@@ -95,9 +79,7 @@ public class FormulaController {
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") int id) {
-        String fooResourceUrl
-                = "http://localhost:8080/api/v1/formulas";
-        restTemplate.delete(fooResourceUrl + "/" + id);
+        restTemplate.delete(resourceUrl + "/" + id);
         return "redirect:/formulas";
     }
 
